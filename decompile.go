@@ -20,11 +20,9 @@ type ASTNode struct {
 	Body     []ASTNode     `json:"Body,omitempty"`
 }
 
-// Parse the script and return the AST nodes
 func parseScript(input string) []ASTNode {
 	var nodes []ASTNode
 
-	// Define regex pattern to match variable assignments and function declarations
 	varPatterns := `set\s*(\{[^}]*\})\s*to\s*(.*)`
 	funcPattern := `function\s*(\w+)\s*\(([^)]*)\)\s*\{([^}]*)\}`
 
@@ -54,7 +52,6 @@ func parseScript(input string) []ASTNode {
 	return nodes
 }
 
-// Create AST node for variable assignments and table settings
 func createASTNode(match []string) ASTNode {
 	varName := parseVariableName(match[1])
 	value := match[2]
@@ -77,7 +74,6 @@ func createASTNode(match []string) ASTNode {
 	}
 }
 
-// Parse function arguments
 func parseFunctionArgs(args string) []string {
 	argList := strings.Split(args, ",")
 	for i, arg := range argList {
@@ -86,10 +82,8 @@ func parseFunctionArgs(args string) []string {
 	return argList
 }
 
-// Parse function body
 func parseFunctionBody(body string) []ASTNode {
 	body = strings.TrimSpace(body)
-	// For simplicity, assume each line in the function body is a statement
 	lines := strings.Split(body, "\n")
 	var nodes []ASTNode
 	for _, line := range lines {
@@ -97,7 +91,6 @@ func parseFunctionBody(body string) []ASTNode {
 		if line == "" {
 			continue
 		}
-		// Example: Detect function calls or other statements
 		if strings.HasPrefix(line, "print") {
 			node := ASTNode{
 				Opcode: "CALLFUNC",
@@ -110,7 +103,6 @@ func parseFunctionBody(body string) []ASTNode {
 	return nodes
 }
 
-// Parse arguments for print function (or similar)
 func parsePrintArgs(line string) []interface{} {
 	args := strings.TrimPrefix(line, "print(")
 	args = strings.TrimSuffix(args, ")")
