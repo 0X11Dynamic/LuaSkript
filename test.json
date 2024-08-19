@@ -1,0 +1,18 @@
+[
+  {
+    "OPCODE": "SETFUNC",
+    "Variable": "func",
+    "Scope": "local",
+    "Args": {
+      "var1",
+      "var2"
+    },
+    "Body": {
+      -- node for the code in the body of the function goes here
+    }
+  }
+]
+
+function func(var1, var2){
+  print("a", "b", 1, GlobalVar, {1,2,3})
+}
