@@ -26,23 +26,20 @@ func parseScript(input string) []ASTNode {
 	varPatterns := `set\s*(\{[^}]*\})\s*to\s*(.*)`
 	funcPattern := `function\s*(\w+)\s*\(([^)]*)\)\s*\{([^}]*)\}`
 
-	// Compile regex patterns
 	varRegex := regexp.MustCompile(varPatterns)
 	funcRegex := regexp.MustCompile(funcPattern)
 
-	// Match variable assignments
 	matches := varRegex.FindAllStringSubmatch(input, -1)
 	for _, match := range matches {
 		nodes = append(nodes, createASTNode(match))
 	}
 
-	// Match function declarations
 	funcMatches := funcRegex.FindAllStringSubmatch(input, -1)
 	for _, match := range funcMatches {
 		funcNode := ASTNode{
 			Opcode:   "SETFUNC",
 			Variable: match[1],
-			Scope:    "local", // Assuming all functions are local
+			Scope:    "local",
 			Args:     parseFunctionArgs(match[2]),
 			Body:     parseFunctionBody(match[3]),
 		}
