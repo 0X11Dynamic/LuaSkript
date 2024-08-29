@@ -1,7 +1,0 @@
-set {GlobalVar} to "variable1"
-set {_LocalVar} to "tempvar"
-set {GlobalTable::*} to {1,2,3}
-set {_LocalTable::*} to {"a","b","c", {1,2,3,4}}
-function func(var1, var2) {
-  print("a", "b", 1, GlobalVar, {1,2,3})
-}
