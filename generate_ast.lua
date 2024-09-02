@@ -10,16 +10,24 @@ set function "testfunc" with args (a,b,c) to run {
     set {innerVar} to 42
     set {innerVar2} to innerVar + 8
     set {tablevar2::*} to {1,2,"3",{"m", "n", doublevar},8, var}
-    set {FUNCVAR} to {a}
+    set {FUNCVAR} to a
 }
 
-call "testfunc" with args ()
+set function "testfun2" with args (first, second, third) to run {
+    set {innerVar2} to 42
+    set {innerVar22} to innerVar + 8
+    set {tablevar22::*} to {1,2,"3",{"m", "n", doublevar},8, var}
+    set {FUNCVAR2} to second
+}
+
+call "testfunc" with args (1,2,3)
+call "testfun2" with args ("a", "b", c)
 
 
 ]]
 
 local varnames = {}
-
+local funcs = {}
 
 -- dump table function
 -- Output logging
@@ -133,21 +141,23 @@ function parseCode(code)
     for line in code:gmatch("[^\r\n]+") do
         if line:gsub(" ", ""):sub(1, 3) == "set" then
             if line:find("[ \b\t]+set function") then
-                local funcname = line:match("function [\"'][0-9\"'a-zA-Z {},-/:;()$&@.?!\\%[%]#%%%^%*%+=_~|<>%.,?!%*]+[\"']")
-                    funcname = funcname:sub(11, #funcname-1)
-                    local funcargs = line:match("with args *%((.-)%)")
-                    for match in funcargs:gmatch("([^,]+)") do
-                        table.insert(varnames, match)
-                    end
-                    local body = str:match("set function ['\"]" .. funcname .. "['\"] with args %([^)]*%) to run {(.*)}")
-                    body = parseCode(body)
+                --local funcname = line:match("function [\"'][0-9\"'a-zA-Z {},-/:;()$&@.?!\\%[%]#%%%^%*%+=_~|<>%.,?!%*]+[\"']")
+                --    funcname = funcname:sub(11, #funcname-1)
+                --    local funcargs = line:match("with args *%((.-)%)")
+                --    for match in funcargs:gmatch("([^,]+)") do
+                --        table.insert(varnames, match)
+                --    end
+                    
+
+                --    local body = str:match("set function ['\"]" .. funcname .. "['\"] with args %([^)]*%) to run {(.*)}")
+                --    body = parseCode(body)
         
-                    table.insert(nodes, {
-                        ["OPCODE"] = "\"SETFUNC\"",
-                        ["Variable"] = ("\"" .. funcname .. "\""):gsub(" ", ""),
-                        ["Args"] = parseTable(funcargs),
-                        ["Body"] = body
-                    })
+                --    table.insert(nodes, {
+                --        ["OPCODE"] = "\"SETFUNC\"",
+                --        ["Variable"] = ("\"" .. funcname .. "\""):gsub(" ", ""),
+                --        ["Args"] = parseTable(funcargs),
+                --        ["Body"] = body
+                --    })
             else
                 local varname
                 line:gsub("set {[a-zA-Z_0-9:%*]+}", function(arg)
@@ -159,26 +169,13 @@ function parseCode(code)
                 local varvalue = line:sub(startpos + 3, endpos)
 
                 if varvalue:sub(1,1) == "{" then
-                    --print("TABLE!")
-                    --local MaybeVarName = varvalue:sub(2,#varvalue)
-                    --MaybeVarName = MaybeVarName:sub(1, #MaybeVarName-1)
-
                     varvalue = varvalue:sub(2, -2)
                     local values = parseTable(varvalue)
-
-                    --if table.find(varnames, MaybeVarName) then
-                    --    table.insert(nodes, {
-                    --        ["OPCODE"] = "\"GETVAR\"",
-                    --        ["Variable"] = "\"" .. MaybeVarName .. "\""
-                    --    })
-                    --else
                         table.insert(nodes, {
                             ["OPCODE"] = "\"MAKETBL\"",
                             ["Variable"] = ("\"" .. varname .. "\""):gsub(" ", ""),
                             ["Value"] = values
                         })
-                    --end
-                    
                 elseif varvalue:find("[%+%-%*/%^%%]") then
                     local values = parseEquation(varvalue)
                     table.insert(nodes, {
@@ -203,6 +200,8 @@ function parseCode(code)
             args = args:sub(12, #args-1)
             args = parseTable(args)
 
+
+
             table.insert(nodes, {
                 ["OPCODE"] = "\"CALL\"",
                 ["Variable"] = ("\"" .. funcname .. "\""):gsub(" ", ""),
@@ -223,13 +222,17 @@ end
                 local funcname = line:match("function [\"'][0-9\"'a-zA-Z {},-/:;()$&@.?!\\%[%]#%%%^%*%+=_~|<>%.,?!%*]+[\"']")
                 funcname = funcname:sub(11, #funcname-1)
                 local funcargs = line:match("with args *%((.-)%)")
+                local tempargs = {}
                 for match in funcargs:gmatch("([^,]+)") do
+                    table.insert(tempargs, match)
                     table.insert(varnames, match)
                 end
 
+                funcs[funcname] = tempargs
+
                 local body = str:match("set function ['\"]" .. funcname .. "['\"] with args %([^)]*%) to run {(.*)}")
                 body = parseCode(body)
-
+                
                 table.insert(tree, {
                     ["OPCODE"] = "\"SETFUNC\"",
                     ["Variable"] = ("\"" .. funcname .. "\""):gsub(" ", ""),
@@ -279,6 +282,43 @@ end
             funcname = funcname:sub(7, #funcname-1)
             local args = line:match("with args %([0-9\"'a-zA-Z {},-/:;()$&@.?!\\%[%]#%%%^%*%+=_~|<>%.,?!%*]+")
             args = args:sub(12, #args-1)
+            local index = 1
+            for word in string.gmatch(args, "([^,]+)") do
+                -- check for if its a variable
+                word = word:gsub("[ \t]", "")
+                local is_variable = not string.match(word, "^(['\"]).*%1$") and
+									not string.match(word, "^%[(=*)%[.*%]%1%]$") and
+									not string.match(word, "^[-+]?%d+%.?%d*[eE]?[-+]?%d*$")
+                if is_variable then
+                    table.insert(tree, {
+                        ["OPCODE"] = "\"SETVAR\"",
+                        ["Variable"] = ("\"" .. funcs[funcname][index] .. "\""):gsub(" ", ""),
+                        ["Value"] = {
+                            ["OPCODE"] = "GETVAR",
+                            ["Variable"] = "\"" .. word .. "\""
+                        }
+                    })
+                else
+                    if word:match("['\"]") then
+                        table.insert(tree, {
+                            ["OPCODE"] = "\"SETVAR\"",
+                            ["Variable"] = ("\"" .. funcs[funcname][index] .. "\""):gsub(" ", ""),
+                            ["Value"] = word
+                        })
+                    else
+                        --print(word)
+                        table.insert(tree, {
+                            ["OPCODE"] = "\"SETVAR\"",
+                            ["Variable"] = ("\"" .. funcs[funcname][index] .. "\""):gsub(" ", ""),
+                            ["Value"] = word
+                        })
+                    end
+                    
+                end
+
+                index = index + 1
+            end
+
             args = parseTable(args)
 
             table.insert(tree, {

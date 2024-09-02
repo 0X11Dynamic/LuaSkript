@@ -21,8 +21,8 @@ local ast = {
       [4] = "+",
       [5] =
       {
-        ["Variable"] = "var",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "var",
       },
     },
     ["Variable"] = "var",
@@ -42,8 +42,8 @@ local ast = {
       [8] = "+",
       [9] =
       {
-        ["Variable"] = "var",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "var",
       },
       [10] = "^",
       [11] = 2,
@@ -66,15 +66,15 @@ local ast = {
         [2] = "n",
         [3] =
         {
-          ["Variable"] = "doublevar",
           ["OPCODE"] = "GETVAR",
+          ["Variable"] = "doublevar",
         },
       },
       [5] = 8,
       [6] =
       {
-        ["Variable"] = "var",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "var",
       },
     },
     ["Variable"] = "tablevar::*",
@@ -96,8 +96,8 @@ local ast = {
         {
           [1] =
           {
-            ["Variable"] = "innerVar",
             ["OPCODE"] = "GETVAR",
+            ["Variable"] = "innerVar",
           },
           [2] = "+",
           [3] = 8,
@@ -118,48 +118,228 @@ local ast = {
             [2] = "n",
             [3] =
             {
-              ["Variable"] = "doublevar",
               ["OPCODE"] = "GETVAR",
+              ["Variable"] = "doublevar",
             },
           },
           [5] = 8,
           [6] =
           {
-            ["Variable"] = "var",
             ["OPCODE"] = "GETVAR",
+            ["Variable"] = "var",
           },
         },
         ["Variable"] = "tablevar2::*",
         ["OPCODE"] = "MAKETBL",
       },
+      [4] =
+      {
+        ["Value"] = 42,
+        ["Variable"] = "innerVar2",
+        ["OPCODE"] = "SETVAR",
+      },
+      [5] =
+      {
+        ["Values"] =
+        {
+          [1] =
+          {
+            ["OPCODE"] = "GETVAR",
+            ["Variable"] = "innerVar",
+          },
+          [2] = "+",
+          [3] = 8,
+        },
+        ["Variable"] = "innerVar22",
+        ["OPCODE"] = "SETEQUATION",
+      },
+      [6] =
+      {
+        ["Value"] =
+        {
+          [1] = 1,
+          [2] = 2,
+          [3] = "3",
+          [4] =
+          {
+            [1] = "m",
+            [2] = "n",
+            [3] =
+            {
+              ["OPCODE"] = "GETVAR",
+              ["Variable"] = "doublevar",
+            },
+          },
+          [5] = 8,
+          [6] =
+          {
+            ["OPCODE"] = "GETVAR",
+            ["Variable"] = "var",
+          },
+        },
+        ["Variable"] = "tablevar22::*",
+        ["OPCODE"] = "MAKETBL",
+      },
     },
     ["Variable"] = "testfunc",
+    ["OPCODE"] = "SETFUNC",
     ["Args"] =
     {
       [1] =
       {
-        ["Variable"] = "a",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "a",
       },
       [2] =
       {
-        ["Variable"] = "b",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "b",
       },
       [3] =
       {
-        ["Variable"] = "c",
         ["OPCODE"] = "GETVAR",
+        ["Variable"] = "c",
       },
     },
-    ["OPCODE"] = "SETFUNC",
   },
   [7] =
   {
+    ["Body"] =
+    {
+      [1] =
+      {
+        ["Value"] = 42,
+        ["Variable"] = "innerVar2",
+        ["OPCODE"] = "SETVAR",
+      },
+      [2] =
+      {
+        ["Values"] =
+        {
+          [1] =
+          {
+            ["OPCODE"] = "GETVAR",
+            ["Variable"] = "innerVar",
+          },
+          [2] = "+",
+          [3] = 8,
+        },
+        ["Variable"] = "innerVar22",
+        ["OPCODE"] = "SETEQUATION",
+      },
+      [3] =
+      {
+        ["Value"] =
+        {
+          [1] = 1,
+          [2] = 2,
+          [3] = "3",
+          [4] =
+          {
+            [1] = "m",
+            [2] = "n",
+            [3] =
+            {
+              ["OPCODE"] = "GETVAR",
+              ["Variable"] = "doublevar",
+            },
+          },
+          [5] = 8,
+          [6] =
+          {
+            ["OPCODE"] = "GETVAR",
+            ["Variable"] = "var",
+          },
+        },
+        ["Variable"] = "tablevar22::*",
+        ["OPCODE"] = "MAKETBL",
+      },
+    },
+    ["Variable"] = "testfun2",
+    ["OPCODE"] = "SETFUNC",
+    ["Args"] =
+    {
+      [1] =
+      {
+        ["OPCODE"] = "GETVAR",
+        ["Variable"] = "first",
+      },
+      [2] =
+      {
+        ["OPCODE"] = "GETVAR",
+        ["Variable"] = "second",
+      },
+      [3] =
+      {
+        ["OPCODE"] = "GETVAR",
+        ["Variable"] = "third",
+      },
+    },
+  },
+  [8] =
+  {
+    ["Value"] = 1,
+    ["Variable"] = "a",
+    ["OPCODE"] = "SETVAR",
+  },
+  [9] =
+  {
+    ["Value"] = 2,
+    ["Variable"] = "b",
+    ["OPCODE"] = "SETVAR",
+  },
+  [10] =
+  {
+    ["Value"] = 3,
+    ["Variable"] = "c",
+    ["OPCODE"] = "SETVAR",
+  },
+  [11] =
+  {
     ["Value"] =
     {
+      [1] = 1,
+      [2] = 2,
+      [3] = 3,
     },
     ["Variable"] = "testfunc",
+    ["OPCODE"] = "CALL",
+  },
+  [12] =
+  {
+    ["Value"] = "a",
+    ["Variable"] = "first",
+    ["OPCODE"] = "SETVAR",
+  },
+  [13] =
+  {
+    ["Value"] = "b",
+    ["Variable"] = "second",
+    ["OPCODE"] = "SETVAR",
+  },
+  [14] =
+  {
+    ["Value"] =
+    {
+      ["OPCODE"] = GETVAR,
+      ["Variable"] = "c",
+    },
+    ["Variable"] = "third",
+    ["OPCODE"] = "SETVAR",
+  },
+  [15] =
+  {
+    ["Value"] =
+    {
+      [1] = "a",
+      [2] = "b",
+      [3] =
+      {
+        ["OPCODE"] = "GETVAR",
+        ["Variable"] = "c",
+      },
+    },
+    ["Variable"] = "testfun2",
     ["OPCODE"] = "CALL",
   },
 }
@@ -170,9 +350,9 @@ local funcs = {}
 
 function execute(tree)
   for i = 1, #tree do
-  --while true do
+    --while true do
     local instr = tree[i]
-    print(instr)
+    --print(instr)
     local stack;
 
     if instr.OPCODE == "SETVAR" then
@@ -221,7 +401,7 @@ function execute(tree)
         Args = instr.Args
       }
     elseif instr.OPCODE == "CALL" then
-      execute(funcs[instr.Variable])
+      execute(funcs[instr.Variable].Body)
     end
 
     if ip == #ast then
